@@ -2,6 +2,8 @@ import os
 import json
 from constantes import ROLES
 import menus as f
+import string
+import random
 from time import sleep
 from constantes import (TAILLE_ECRAN, F_USERS, ETAT)
 
@@ -173,12 +175,15 @@ def change_user_by(users: list, idUser: int, key: str, value):
 
 def show_users(users: list):
     titre("LISTER UTILISATEUR", "-")
-    print(f"{'ID':<4}{'NOM':<17}{'PRENOM':<17}{'LOGIN':<17}{'ROLE':<13}{'ETAT':<10}")
+    print(f"{'ID':<4}{'NOM':<17}{'PRENOM':<17}{'LOGIN':<22}{'ROLE':<17}{'ETAT':<10}")
     ligne(TAILLE_ECRAN, "=")
     for line in users:
+        role = line.get("role")
         etat = int(line.get('etat'))
-        print(
-            f"{line.get('id'):<4}{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('login'):<17}{line.get('role'):<13}{ETAT[etat]:<10}")
+        if role == "admin" or role == "medecin" or role == "secretaire":
+            print(
+                f"{line.get('id'):<4}{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('login'):<22}{line.get('role'):<17}{ETAT[etat]:<10}")
+    return users
 
 
 def show_med_available(users: list):
@@ -193,51 +198,84 @@ def show_med_available(users: list):
 
 
 def show_med(users: list, date: str, heure: str, date_available: str, time_available: str):
-    titre("LISTER MEDECIN DISPONIBLE", "-")
-    print(f"{'NOM':<17}{'PRENOM':<17}{'SERVICE':<17}{'JOUR DISPONIBLE'}{'HEURE DISPONIBLE'}")
     ligne(TAILLE_ECRAN, "=")
     for line in users:
         role = line.get("role")
         if role == "medecin":
-            print(f"{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('sprecialite'):<17}{line.get('date_libre'):<13}{line.get('heure_libre'):<13}")
             for line in role:
                 if date == date_available and heure == time_available:
-                    demande = int(
-                        input("RV SANS ORDONNANCE--1 ou 2--RV AVEC ORDONNANCE"))
-                    if (demande == 1):
-                        print("DEBUR CONSULTATION...")
-                        nom = input("Nom: \n")
-                        prenom = input("Prenom: \n")
-                        tel = int(input("Phone number: \n"))
-                        date_rv = input(
-                            "entrez date de rendez-vous au format(dd/mm/yyyy): ")
-                        heure_rv = input(
-                            "entrez heure rendez-vous au format(hh/mm): ")
-                        service = input("entrer le service de consultation: ")
-                        sleep(5)
-                        print("FIN CONSULTATION ")
-                        login = f"{nom}{prenom}{(len(users)+1)*2}"
-                        f.create_user_rv_without_ordonnace(users, nom, prenom, tel, date_rv, heure_rv, service,
-                                                           ROLES[int(role)])
-                    elif (demande == 2):
-                        print("DEBUT CONSULTATION")
-                        sleep(5)
-                        nom = input("Nom: \n")
-                        prenom = input("Prenom: \n")
-                        tel = int(input("Phone number: \n"))
-                        date_rv = input(
-                            "entrez date de rendez-vous au format(dd/mm/yyyy): ")
-                        heure_rv = input(
-                            "entrez heure rendez-vous au format(hh/mm): ")
-                        service = input("entrer le service de consultation: ")
-                        print("FIN CONSULTATION")
-                        nom = input("Nom: \n")
-                        prenom = input("Prenom: \n")
-                        tel = int(input("Phone number: \n"))
-                        ordonnance = input("entrer l'ordonnace du client: ")
-                        login = f"{nom}{prenom}{(len(users)+1)*2}"
-                        f.create_user_rv_with_ordonnace(users, nom, prenom, tel, date_rv, heure_rv, service, ordonnance,
-                                                        login, ROLES[int(role)])
-                elif date == date_available and heure == time_available:
+                    print("DEMANDE RENDEZ-VOUS...")
+                    print("SAISIR VOS DONNEES:\n")
+                    nom = input("Nom: \n")
+                    prenom = input("Prenom: \n")
+                    tel = int(input("Phone number: \n"))
+                    date_rv = input(
+                        "entrez date de rendez-vous au format(dd/mm/yyyy): ")
+                    heure_rv = input(
+                        "entrez heure rendez-vous au format(hh/mm): ")
+                    service = input("entrer le service de consultation: ")
+                    sleep(5)
+                    print("FIN CONSULTATION ")
+                    f.create_user_rv_without_ordonnace(users, nom, prenom, tel, date_rv, heure_rv, service,
+                                                       ROLES[int(role)])
+                elif date != date_available and heure != time_available:
                     print("AUCUN MEDECIN N'EST DISPONIBLE A CES HORAIRES")
     return role
+
+
+def change_date(users: list, idUser: int, old_date: str, new_date: str):
+    for line in users:
+        id = line.get("id")
+        date = line.get("date_libre")
+        if id == idUser and old_date == date and new_date != old_date:
+            line["date_libre"] = new_date
+            update_json(F_USERS, users)
+        else:
+            print("modification de compte qui n'est pas le votre impossible")
+    return users
+
+
+def change_heure(users: list, idUser: int, old_heure: str, new_heure: str):
+    for line in users:
+        id = line.get("id")
+        heure = line.get("heure_libre")
+        if id == idUser and old_heure == heure and new_heure != old_heure:
+            line["heure_libre"] = new_heure
+            update_json(F_USERS, users)
+        else:
+            print("modification de compte qui n'est pas le votre impossible")
+    return users
+
+
+def show_rv_clt(users: list, nomUser: str, prenomUser: str, telUser: int):
+    titre("LISTE DES RENDEZ-VOUS", "-")
+    print(f"{'NOM':<17}{'PRENOM':<17}{'date rv':<17}{'heure rv'}{'service consultation'}")
+    ligne(TAILLE_ECRAN, "=")
+    for line in users:
+        nom = line.get("nom")
+        prenom = line.get("prenom")
+        tel = line.get("tel")
+        if nomUser == nom and prenomUser == prenom and telUser == tel:
+            print(f"{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('date_rv'):<17}{line.get('heure_rv'):<13}{line.get('service'):<13}")
+    return users
+
+
+def write_ser(users: list, nomUser: str, prenomUser: str, telUser: int):
+    for line in users:
+        nom = line.get("nom")
+        prenom = line.get("prenom")
+        tel = line.get("tel")
+        if (nomUser == nom and prenomUser == prenom and telUser == tel):
+            file_name = nomUser + "_" + \
+                str(telUser) + ''.join(random.choices(string.ascii_letters +
+                                                      string.digits, k=5)) + ".txt"
+            with open(file_name, "w") as file:
+                file.write("Consultation de " + prenom + " " + nom + "\n")
+                file.write("Tel: " + str(tel) + "\n")
+                file.write("Service: " + line.get("service") + "\n")
+                file.write("Date Rendez-vous: " + line.get("date_rv") + "\n")
+                file.write("Heure Rendez-vous: " + line.get("heure_rv") + "\n")
+                file.write("Prescription Medecin: " +
+                           line.get("ordonnance") + "\n")
+                return
+    return users
