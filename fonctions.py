@@ -101,8 +101,6 @@ def profil_client(users: list, nomUser: str, prenomUser: str, telUser: int):
         tel = line.get("tel")
         if tel == telUser and nom == nomUser and prenom == prenomUser:
             print(json.dumps(line, indent=2))
-        elif tel != telUser or nom != nomUser or prenom != prenomUser:
-            print("ce n'est pas vos identifiants")
     return users
 
 
@@ -154,15 +152,15 @@ def add_user_med(users: list, nom: str, prenom: str, tel: int, sprecialite: str,
     update_json(F_USERS, users)
 
 
-def create_user_rv_with_ordonnace(users: list, nom: str, prenom: str, tel: int, date_rv: str, heure_rv: str, service: str, ordonnance: str, login: str, role: str):
+def create_user_rv_with_ordonnace(users: list, nom: str, prenom: str, tel: int, date_rv: str, heure_rv: str, service: str, nomMed: str, ordonnance: str, login: str, role: str):
     users.append({"id": len(users)+1, "nom": nom, "prenom": prenom, "tel": tel, "date_rv": date_rv,
-                  "heure_rv": heure_rv, "service": service, "ordonnance": ordonnance, "login": login, "pass": "passer", "role": role, "etat": 1})
+                  "heure_rv": heure_rv, "service": service, "nomMed": nomMed, "ordonnance": ordonnance, "login": login, "pass": "passer", "role": role, "etat": 1})
     update_json(F_USERS, users)
 
 
-def create_user_rv_without_ordonnace(users: list, nom: str, prenom: str, tel: int, date_rv: str, heure_rv: str, service: str, role: str):
+def create_user_rv_without_ordonnace(users: list, nom: str, prenom: str, tel: int, date_rv: str, heure_rv: str, service: str, nomMed: str, role: str):
     users.append({"id": len(users)+1, "nom": nom, "prenom": prenom, "tel": tel, "date_rv": date_rv,
-                  "heure_rv": heure_rv, "service": service, "role": role, "etat": 1})
+                  "heure_rv": heure_rv, "service": service, "nomMed": nomMed, "role": role, "etat": 1})
     update_json(F_USERS, users)
 
 
@@ -273,9 +271,40 @@ def write_ser(users: list, nomUser: str, prenomUser: str, telUser: int):
                 file.write("Consultation de " + prenom + " " + nom + "\n")
                 file.write("Tel: " + str(tel) + "\n")
                 file.write("Service: " + line.get("service") + "\n")
-                file.write("Date Rendez-vous: " + line.get("date_rv") + "\n")
-                file.write("Heure Rendez-vous: " + line.get("heure_rv") + "\n")
-                file.write("Prescription Medecin: " +
+                file.write("Date: " + line.get("date_rv") + "\n")
+                file.write("Heure: " + line.get("heure_rv") + "\n")
+                file.write("Prescription: " +
                            line.get("ordonnance") + "\n")
                 return
     return users
+
+
+def demande_rv(users: list, nom: str, prenom: str, tel: int, motif: str, service: str, ordonnance: str, role: str,):
+    users.append({"id": len(users)+1, "nom": nom, "prenom": prenom, "tel": tel,
+                 "motif": "demande rv", "service": service, "ordonnance": ordonnance, "role": "client", "etat": 1})
+    update_json(F_USERS, users)
+
+
+def show_dm_clt(users: list, sprecialiteUser: str):
+    titre("LISTER DES DEMANDE RV", "-")
+    print(f"{'NOM':<17}{'PRENOM':<17}{'motif':<17}{'service':<17}{'ordonnance':<17}")
+    ligne(TAILLE_ECRAN, "=")
+    for line in users:
+        sprecialite = line.get("sprecialite")
+        if sprecialiteUser == sprecialite:
+            for line in users:
+                service = line.get("service")
+                motif = line.get("motif")
+                if sprecialiteUser == "dentiste":
+                    if motif == "demande rv" and service == "dentiste":
+                        print(
+                            f"{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('motif'):<17}{line.get('service'):<13}{line.get('ordonnance')}")
+                if sprecialiteUser == "ophtalmologue":
+                    if motif == "demande rv" and service == "ophtalmologue":
+                        print(
+                            f"{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('motif'):<17}{line.get('service'):<13}{line.get('ordonnance')}")
+                if sprecialiteUser == "cardiologue":
+                    if motif == "demande rv" and service == "cardiologue":
+                        print(
+                            f"{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('motif'):<17}{line.get('service'):<13}{line.get('ordonnance')}")
+            return users

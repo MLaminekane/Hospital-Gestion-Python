@@ -26,7 +26,7 @@ def connexion():
 
 
 def menu_admin():
-    print("1---------LISTER LES UTILISATEUR ")
+    print("1---------LISTER LES UTILISATEURS ")
     print("2---------AJOUTER SECRETAIRE ")
     print("3---------AJOUTER MEDECIN ")
     print("4---------MODIFIER MOT DE PASSE UTILISATEUR ")
@@ -37,18 +37,18 @@ def menu_admin():
 
 def menu_secretaire():
     print("1---------LISTER LES RENDEZ-VOUS  ")
-    print("2---------CREER RENDEZ-VOUS ")
-    print("3---------MODIFIER RENDEZ-VOUS ")
+    print("2---------CREER DEMANDE DE RENDEZ-VOUS  ")
+    print("3---------MODIFIER DISPONIBILITE MEDECIN ")
     print("9---------SE DECONNECTER ")
     return f.saisir_entier("FAITES VOTRE CHOIX \n", 1, 9)
 
 
 def menu_medecin():
     print("1---------LISTER LES RENDEZ-VOUS  ")
-    print("2---------FAIRE CONSULTATION ")
+    print("2---------LISTER DEMANDE RENDEZ-VOUS ET FAIRE CONSULTATION")
     print("3---------MODIFIER DISPONIBILITE ")
     print("4---------CONSULTER PROFIL CLIENT ")
-    print("5---------VOIR PROFIL")
+    print("5---------VOIR SON PROFIL")
     print("9---------SE DECONNECTER ")
     return f.saisir_entier("FAITES VOTRE CHOIX:\n", 1, 9)
 
@@ -57,10 +57,8 @@ def menu_client():
     print("1---------DEMANDE CONSULTATION")
     print("2---------VOIR SES CONSULTATIONS")
     print("3---------VOIR SES RENDEZ-VOUS")
-    print("4---------VOIR RENDEZ-VOUS PROCHAIN")
-    print("5---------TELECHARGER SON ORDONNANCE ")
-    print("6---------MODIFIER SON RENDEZ VOUS PROCHAIN")
-    print("7---------VOIR PROFIL")
+    print("4---------TELECHARGER SA CONSULTATION ")
+    print("5---------VOIR PROFIL")
     print("9---------SE DECONNECTER ")
     return f.saisir_entier("FAITES VOTRE CHOIX \n", 1, 9)
 
@@ -117,19 +115,19 @@ def menu_users(role):
                     f.show_user_rv(users)
                     sleep(10)
                 case 2:
-                    role = input("Client--->0: ")
-                    print("DEMANDE DE RENDEZ-VOUS")
-                    nom = input("Nom: \n")
-                    prenom = input("Prenom: \n")
-                    tel = int(input("Phone number: \n"))
-                    date_rv = input(
-                        "entrez date de rendez-vous au format(dd/mm/yyyy): ")
-                    heure_rv = input(
-                        "entrez heure rendez-vous au format(hh/mm): ")
-                    service = input("entrer le service de consultation: ")
-                    login = f"{nom}{prenom}{(len(users)+1)*2}"
-                    f.create_user_rv_without_ordonnace(users, nom, prenom, tel, date_rv, heure_rv, service,
-                                                       ROLES[int(role)])
+                    f.demande_rv(users, input("nom: "), input("prenom: "), int(
+                        input("tel: ")), print("motif"), input("service: "), input("ordonnance (oui ou non): "), print(role))
+                case 3:
+                    f.show_med_available(users)
+                    print(
+                        "QUE VOULEZ VOUS CHANGER L'HEURE OU LA DATE ? \nSi heure appuyez sur 1\nSi date appuyez sur 2")
+                    choix = int(input("entrer votre choix: "))
+                    if choix == 1:
+                        f.change_heure(users, int(input("entrer id: ")), input(
+                            "old heure: "), input("new heure: "))
+                    elif choix == 2:
+                        f.change_date(users, int(input("entrer id: ")), input(
+                            "old date: "), input("new date: "))
                 case 9:
                     retourMenu = 0
     if (role == ROLES[0]):
@@ -148,11 +146,10 @@ def menu_users(role):
                     f.show_rv_clt(users, input("votre nom: "), input(
                         "votre prenom: "), int(input("numero phone: ")))
                     sleep(10)
-                case 5:
+                case 4:
                     f.write_ser(users, input("votre nom: "), input(
                         "votre prenom: "), int(input("numero phone: ")))
-                    sleep(10)
-                case 7:
+                case 5:
                     f.profil_client(users, input("nom: "), input(
                         "prenom: "), int(input("numero: ")))
                     sleep(10)
@@ -167,44 +164,53 @@ def menu_users(role):
                     f.show_user_rv(users)
                     sleep(10)
                 case 2:
-                    role = input("Client--->0: \n")
-                    demande = int(
-                        input("RV SANS ORDONNANCE--1 ou 2--RV AVEC ORDONNANCE"))
-                    if (demande == 1):
-                        print("DEBUT CONSULTATION...")
-                        nom = input("Nom: \n")
-                        prenom = input("Prenom: \n")
-                        tel = int(input("Phone number: \n"))
-                        date_rv = input(
-                            "entrez date de rendez-vous au format(dd/mm/yyyy): ")
-                        heure_rv = input(
-                            "entrez heure rendez-vous au format(hh/mm): ")
-                        service = input("entrer le service de consultation: ")
-                        sleep(5)
-                        print("FIN CONSULTATION ")
-                        login = f"{nom}{prenom}{(len(users)+1)*2}"
-                        f.create_user_rv_without_ordonnace(users, nom, prenom, tel, date_rv, heure_rv, service,
-                                                           ROLES[int(role)])
-                    elif (demande == 2):
-                        print("DEBUT CONSULTATION")
-                        sleep(5)
-                        nom = input("Nom: \n")
-                        prenom = input("Prenom: \n")
-                        tel = int(input("Phone number: \n"))
-                        date_rv = input(
-                            "entrez date de rendez-vous au format(dd/mm/yyyy): ")
-                        heure_rv = input(
-                            "entrez heure rendez-vous au format(hh/mm): ")
-                        service = input("entrer le service de consultation: ")
-                        print("FIN CONSULTATION")
-                        nom = input("Nom: \n")
-                        prenom = input("Prenom: \n")
-                        ordonnance = input("entrer l'ordonnace du client: ")
-                        login = f"{nom}{prenom}{(len(users)+1)*2}"
-                        f.create_user_rv_with_ordonnace(users, nom, prenom, tel, date_rv, heure_rv, service, ordonnance,
-                                                        login, ROLES[int(role)])
-                    else:
-                        print("REVENEZ PLUS TARD")
+                    f.show_dm_clt(users, input("votre specialite: "))
+                    sleep(5)
+                    x = input("voulez vous faire la consultation oui ou non : ")
+                    if x == "oui":
+                        role = input("Client--->0: \n")
+                        demande = int(
+                            input("RV SANS ORDONNANCE--1 ou 2--RV AVEC ORDONNANCE"))
+                        if (demande == 1):
+                            print("DEBUT CONSULTATION...")
+                            nom = input("Nom: \n")
+                            prenom = input("Prenom: \n")
+                            tel = int(input("Phone number: \n"))
+                            date_rv = input(
+                                "entrez date de rendez-vous au format(dd/mm/yyyy): ")
+                            heure_rv = input(
+                                "entrez heure rendez-vous au format(hh/mm): ")
+                            service = input(
+                                "entrer le service de consultation: ")
+                            nomMed = input(
+                                "nom du medecin pour la comsultation du patient: ")
+                            sleep(5)
+                            print("FIN CONSULTATION ")
+                            f.create_user_rv_without_ordonnace(users, nom, prenom, tel, date_rv, heure_rv, service, nomMed,
+                                                               ROLES[int(role)])
+                        elif (demande == 2):
+                            print("DEBUT CONSULTATION")
+                            sleep(5)
+                            nom = input("Nom: \n")
+                            prenom = input("Prenom: \n")
+                            tel = int(input("Phone number: \n"))
+                            date_rv = input(
+                                "entrez date de rendez-vous au format(dd/mm/yyyy): ")
+                            heure_rv = input(
+                                "entrez heure rendez-vous au format(hh/mm): ")
+                            service = input(
+                                "entrer le service de consultation: ")
+                            nomMed = input(
+                                "nom du medecin pour la comsultation du patient: ")
+                            print("FIN CONSULTATION")
+                            nom = input("Nom: \n")
+                            prenom = input("Prenom: \n")
+                            ordonnance = input(
+                                "entrer l'ordonnace du client: ")
+                            login = f"{nom}{prenom}{(len(users)+1)*2}"
+
+                            f.create_user_rv_with_ordonnace(users, nom, prenom, tel, date_rv, heure_rv, service, nomMed, ordonnance,
+                                                            login, ROLES[int(role)])
                 case 3:
                     f.show_med_available(users)
                     print(
