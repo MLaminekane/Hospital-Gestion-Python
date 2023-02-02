@@ -5,8 +5,6 @@ import menus as f
 import string
 import random
 from time import sleep
-import re
-from datetime import datetime
 from constantes import (TAILLE_ECRAN, F_USERS, ETAT)
 
 
@@ -136,14 +134,6 @@ def add_user_sec(users: list, nom: str, prenom: str, tel: int, heure_pointe: str
 
 
 def add_user_med(users: list, nom: str, prenom: str, tel: int, sprecialite: str, date_libre: str, heure_libre: str, login: str, role: str):
-    date_format = re.compile("^\d{2}/\d{2}/\d{4}$")
-    time_format = re.compile("^\d{2}:\d{2}$")
-    if not date_format.match(date_libre):
-        print("Invalid date format, expected dd/mm/yyyy")
-        return
-    if not time_format.match(heure_libre):
-        print("Invalid time format, expected hh:mm")
-        return
     users.append({"id": len(users)+1, "nom": nom, "prenom": prenom, "tel": tel, "sprecialite": sprecialite, "date_libre": date_libre, "heure_libre": heure_libre,
                  "login": login, "pass": "passer", "role": role, "etat": 1})
     update_json(F_USERS, users)
@@ -185,8 +175,6 @@ def show_med_available(users: list):
     return users
 
 
-
-
 def show_med(users: list, date: str, heure: str, date_available: str, time_available: str):
     ligne(TAILLE_ECRAN, "=")
     for line in users:
@@ -199,26 +187,10 @@ def show_med(users: list, date: str, heure: str, date_available: str, time_avail
                     nom = input("Nom: \n")
                     prenom = input("Prenom: \n")
                     tel = int(input("Phone number: \n"))
-                    while True:
-                        date_rv = input(
-                            "entrez date de rendez-vous au format(dd/mm/yyyy): ")
-                        date_format = re.compile(r"\d\d/\d\d/\d\d\d\d")
-                        if date_format.match(date_rv):
-                            date_rv = datetime.strptime(date_rv, '%d/%m/%Y')
-                            break
-                        else:
-                            print("Format de date incorrect, veuillez réessayer.")
-
-                    while True:
-                        heure_rv = input(
-                            "entrez heure rendez-vous au format(hh:mm): ")
-                        heure_format = re.compile(r"\d\d:\d\d")
-                        if heure_format.match(heure_rv):
-                            heure_rv = datetime.strptime(heure_rv, '%H:%M')
-                            break
-                        else:
-                            print("Format d'heure incorrect, veuillez réessayer.")
-
+                    date_rv = input(
+                        "entrez date de rendez-vous au format(dd/mm/yyyy): ")
+                    heure_rv = input(
+                        "entrez heure rendez-vous au format(hh:mm): ")
                     service = input("entrer le service de consultation: ")
                     sleep(5)
                     print("FIN CONSULTATION ")
@@ -227,7 +199,6 @@ def show_med(users: list, date: str, heure: str, date_available: str, time_avail
                 elif date != date_available and heure != time_available:
                     print("AUCUN MEDECIN N'EST DISPONIBLE A CES HORAIRES")
     return role
-
 
 
 def change_date(users: list, idUser: int, old_date: str, new_date: str):
