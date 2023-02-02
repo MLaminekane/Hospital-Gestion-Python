@@ -68,7 +68,7 @@
     "service": "dentiste",
     "ordonnance": "non",
     "role": "client",
-    "etat": 1
+    "etat": 0
   },
   {
     "id": 7,
@@ -94,7 +94,7 @@
     "etat": 1
   },
   {
-    "id": 10,
+    "id": 9,
     "nom": "kane",
     "prenom": "mohamed",
     "tel": 770977510,
@@ -107,5 +107,65 @@
     "pass": "passer",
     "role": "client",
     "etat": 1
+  },
+  {
+    "id": 10,
+    "nom": "Cisse",
+    "prenom": "Matar",
+    "tel": 772175837,
+    "motif": "demande rv",
+    "service": "dentiste",
+    "ordonnance": "non",
+    "role": "client",
+    "etat": 1
+  },
+  {
+    "id": 11,
+    "nom": "uzumaki",
+    "prenom": "naruto",
+    "tel": 771174951,
+    "motif": "demande rv",
+    "service": "ophtalmologue",
+    "ordonnance": "oui",
+    "role": "client",
+    "etat": 1
+  },
+  {
+    "id": 12,
+    "nom": "uzumaki",
+    "prenom": "Naruto",
+    "tel": 771174951,
+    "date_rv": "02/02/2023",
+    "heure_rv": "13:45",
+    "service": "ophtalmologue",
+    "nomMed": "Beland Arcy",
+    "ordonnance": "Multiclonage 2/j",
+    "login": "uzumakiNaruto24",
+    "pass": "passer",
+    "role": "client",
+    "etat": 1
+  },
+  {
+    "id": 13,
+    "nom": "nahum",
+    "prenom": "papa",
+    "tel": 774293246,
+    "motif": "demande rv",
+    "service": "dentiste",
+    "ordonnance": "non",
+    "role": "client",
+    "etat": 0
+  },
+  {
+    "id": 14,
+    "nom": "nahum",
+    "prenom": "papa",
+    "tel": 774293246,
+    "date_rv": "02/02/2023",
+    "heure_rv": "15:28",
+    "service": "dentiste",
+    "nomMed": "Paty Harry",
+    "role": "client",
+    "etat": 0
   }
 ]

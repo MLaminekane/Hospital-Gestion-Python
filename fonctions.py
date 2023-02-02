@@ -5,6 +5,8 @@ import menus as f
 import string
 import random
 from time import sleep
+import re
+from datetime import datetime
 from constantes import (TAILLE_ECRAN, F_USERS, ETAT)
 
 
@@ -117,19 +119,6 @@ def update_json(nom_ficher_json: str, data: list) -> None:
         json.dump(data, mon_ficher)
 
 
-def enable_user(users: list, idUser: int) -> None:
-    effacer_ecran()
-    for line in users:
-        id = line.get("id")
-        etat = int(line.get("etat"))
-        if (id == idUser):
-            line["etat"] = 1
-            print(line["etat"])
-            with open(F_USERS, "w") as mon_ficher:
-                json.dump(users, mon_ficher)
-    return None
-
-
 def change_password(users: list, idUser: int, old_pass: str, new_pass: str):
     for line in users:
         id = line.get("id")
@@ -147,6 +136,14 @@ def add_user_sec(users: list, nom: str, prenom: str, tel: int, heure_pointe: str
 
 
 def add_user_med(users: list, nom: str, prenom: str, tel: int, sprecialite: str, date_libre: str, heure_libre: str, login: str, role: str):
+    date_format = re.compile("^\d{2}/\d{2}/\d{4}$")
+    time_format = re.compile("^\d{2}:\d{2}$")
+    if not date_format.match(date_libre):
+        print("Invalid date format, expected dd/mm/yyyy")
+        return
+    if not time_format.match(heure_libre):
+        print("Invalid time format, expected hh:mm")
+        return
     users.append({"id": len(users)+1, "nom": nom, "prenom": prenom, "tel": tel, "sprecialite": sprecialite, "date_libre": date_libre, "heure_libre": heure_libre,
                  "login": login, "pass": "passer", "role": role, "etat": 1})
     update_json(F_USERS, users)
@@ -164,13 +161,6 @@ def create_user_rv_without_ordonnace(users: list, nom: str, prenom: str, tel: in
     update_json(F_USERS, users)
 
 
-def change_user_by(users: list, idUser: int, key: str, value):
-    for line in users:
-        if (idUser == line.get("id") and line.get(key) != None):
-            line[key] = value
-            update_json(F_USERS, users)
-
-
 def show_users(users: list):
     titre("LISTER UTILISATEUR", "-")
     print(f"{'ID':<4}{'NOM':<17}{'PRENOM':<17}{'LOGIN':<22}{'ROLE':<17}{'ETAT':<10}")
@@ -186,13 +176,15 @@ def show_users(users: list):
 
 def show_med_available(users: list):
     titre("LISTER MEDECIN DISPONIBLE", "-")
-    print(f"{'NOM':<17}{'PRENOM':<17}{'SERVICE':<17}{'JOUR DISPONIBLE'}{'HEURE DISPONIBLE'}")
+    print(f"{'NOM':<17}{'PRENOM':<17}{'SERVICE':<17}{'JOUR DISPONIBLE':<13}{'HEURE DISPONIBLE':<13}")
     ligne(TAILLE_ECRAN, "=")
     for line in users:
         role = line.get("role")
         if role == "medecin":
             print(f"{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('sprecialite'):<17}{line.get('date_libre'):<13}{line.get('heure_libre'):<13}")
     return users
+
+
 
 
 def show_med(users: list, date: str, heure: str, date_available: str, time_available: str):
@@ -207,10 +199,26 @@ def show_med(users: list, date: str, heure: str, date_available: str, time_avail
                     nom = input("Nom: \n")
                     prenom = input("Prenom: \n")
                     tel = int(input("Phone number: \n"))
-                    date_rv = input(
-                        "entrez date de rendez-vous au format(dd/mm/yyyy): ")
-                    heure_rv = input(
-                        "entrez heure rendez-vous au format(hh/mm): ")
+                    while True:
+                        date_rv = input(
+                            "entrez date de rendez-vous au format(dd/mm/yyyy): ")
+                        date_format = re.compile(r"\d\d/\d\d/\d\d\d\d")
+                        if date_format.match(date_rv):
+                            date_rv = datetime.strptime(date_rv, '%d/%m/%Y')
+                            break
+                        else:
+                            print("Format de date incorrect, veuillez réessayer.")
+
+                    while True:
+                        heure_rv = input(
+                            "entrez heure rendez-vous au format(hh:mm): ")
+                        heure_format = re.compile(r"\d\d:\d\d")
+                        if heure_format.match(heure_rv):
+                            heure_rv = datetime.strptime(heure_rv, '%H:%M')
+                            break
+                        else:
+                            print("Format d'heure incorrect, veuillez réessayer.")
+
                     service = input("entrer le service de consultation: ")
                     sleep(5)
                     print("FIN CONSULTATION ")
@@ -219,6 +227,7 @@ def show_med(users: list, date: str, heure: str, date_available: str, time_avail
                 elif date != date_available and heure != time_available:
                     print("AUCUN MEDECIN N'EST DISPONIBLE A CES HORAIRES")
     return role
+
 
 
 def change_date(users: list, idUser: int, old_date: str, new_date: str):
@@ -247,14 +256,14 @@ def change_heure(users: list, idUser: int, old_heure: str, new_heure: str):
 
 def show_rv_clt(users: list, nomUser: str, prenomUser: str, telUser: int):
     titre("LISTE DES RENDEZ-VOUS", "-")
-    print(f"{'NOM':<17}{'PRENOM':<17}{'date rv':<17}{'heure rv'}{'service consultation'}")
+    print(f"{'NOM':<17}{'PRENOM':<17}{'DATE':<13}{'HEURE':<13}{'SERVICE':<15}")
     ligne(TAILLE_ECRAN, "=")
     for line in users:
         nom = line.get("nom")
         prenom = line.get("prenom")
         tel = line.get("tel")
         if nomUser == nom and prenomUser == prenom and telUser == tel:
-            print(f"{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('date_rv'):<17}{line.get('heure_rv'):<13}{line.get('service'):<13}")
+            print(f"{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('date_rv'):<13}{line.get('heure_rv'):<13}{line.get('service'):<15}")
     return users
 
 
@@ -268,15 +277,20 @@ def write_ser(users: list, nomUser: str, prenomUser: str, telUser: int):
                 str(telUser) + ''.join(random.choices(string.ascii_letters +
                                                       string.digits, k=5)) + ".txt"
             with open(file_name, "w") as file:
-                file.write("Consultation de " + prenom + " " + nom + "\n")
-                file.write("Tel: " + str(tel) + "\n")
-                file.write("Service: " + line.get("service") + "\n")
-                file.write("Date: " + line.get("date_rv") + "\n")
-                file.write("Heure: " + line.get("heure_rv") + "\n")
-                file.write("Prescription: " +
-                           line.get("ordonnance") + "\n")
+                file.write("Consultation de : \n\n")
+                file.write("Nom : " + nom + "\n")
+                file.write("Prénom : " + prenom + "\n")
+                file.write("Tel : " + str(tel) + "\n\n")
+                file.write("Information sur la consultation : \n\n")
+                file.write("Service : " + line.get("service") + "\n")
+                file.write("Date : " + line.get("date_rv") + "\n")
+                file.write("Heure : " + line.get("heure_rv") + "\n\n")
+                file.write("MEDECIN: " + line.get("nomMed") + "\n\n")
+                file.write("Prescription : \n\n")
+                file.write(line.get("ordonnance") + "\n")
                 return
     return users
+
 
 
 def demande_rv(users: list, nom: str, prenom: str, tel: int, motif: str, service: str, ordonnance: str, role: str,):
@@ -287,7 +301,7 @@ def demande_rv(users: list, nom: str, prenom: str, tel: int, motif: str, service
 
 def show_dm_clt(users: list, sprecialiteUser: str):
     titre("LISTER DES DEMANDE RV", "-")
-    print(f"{'NOM':<17}{'PRENOM':<17}{'motif':<17}{'service':<17}{'ordonnance':<17}")
+    print(f"{'NOM':<17}{'PRENOM':<17}{'NUMERO':<10}{'MOTIF':<11}{'SERVICE':<13}{'ORDONNANCE':<9}{'ETAT':<15}")
     ligne(TAILLE_ECRAN, "=")
     for line in users:
         sprecialite = line.get("sprecialite")
@@ -295,16 +309,38 @@ def show_dm_clt(users: list, sprecialiteUser: str):
             for line in users:
                 service = line.get("service")
                 motif = line.get("motif")
+                etat = line.get("etat")
                 if sprecialiteUser == "dentiste":
                     if motif == "demande rv" and service == "dentiste":
                         print(
-                            f"{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('motif'):<17}{line.get('service'):<13}{line.get('ordonnance')}")
+                            f"{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('tel'):<10}{line.get('motif'):<11}{line.get('service'):<13}{line.get('ordonnance'):<10}{ETAT[etat]:<30}")
                 if sprecialiteUser == "ophtalmologue":
                     if motif == "demande rv" and service == "ophtalmologue":
                         print(
-                            f"{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('motif'):<17}{line.get('service'):<13}{line.get('ordonnance')}")
+                            f"{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('tel'):<10}{line.get('motif'):<11}{line.get('service'):<13}{line.get('ordonnance'):<10}{ETAT[etat]:<30}")
                 if sprecialiteUser == "cardiologue":
                     if motif == "demande rv" and service == "cardiologue":
                         print(
-                            f"{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('motif'):<17}{line.get('service'):<13}{line.get('ordonnance')}")
+                            f"{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('tel'):<10}{line.get('motif'):<11}{line.get('service'):<13}{line.get('ordonnance'):<10}{ETAT[etat]:<30}")
             return users
+
+def change_state_dm(users: list, telUser: int, state: int):
+    for line in users:
+        tel = line.get("tel")
+        etat = int(line.get("etat"))
+        if (tel == telUser):
+            line["etat"] = state
+            update_json(F_USERS, users)
+    return users    
+
+
+def show_cons(users: list, telUser: int, nomMed: str):
+    titre("LISTE DES CONSULTATIONS", "-")
+    print(f"{'NOM':<17}{'PRENOM':<17}{'DATE':<13}{'HEURE':<15}{'SERVICE':<17}{'MEDECIN':<25}")
+    ligne(TAILLE_ECRAN, "=")
+    for line in users:
+        tel = line.get("tel")
+        med = line.get("nomMed")
+        if (tel == telUser and med == nomMed):
+            print(f"{line.get('nom'):<17}{line.get('prenom'):<17}{line.get('date_rv'):<13}{line.get('heure_rv'):<15}{line.get('service'):<17}{line.get('nomMed'):<25}")
+    return users

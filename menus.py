@@ -38,7 +38,8 @@ def menu_admin():
 def menu_secretaire():
     print("1---------LISTER LES RENDEZ-VOUS  ")
     print("2---------CREER DEMANDE DE RENDEZ-VOUS  ")
-    print("3---------MODIFIER DISPONIBILITE MEDECIN ")
+    print("3---------GERER DEMANDE RV")
+    print("4---------MODIFIER DISPONIBILITE MEDECIN ")
     print("9---------SE DECONNECTER ")
     return f.saisir_entier("FAITES VOTRE CHOIX \n", 1, 9)
 
@@ -72,7 +73,13 @@ def menu_users(role):
                 case 1:
                     print("1---------LISTE DES UTILISATEURS")
                     f.show_users(users)
-                    sleep(10)
+                    retour = input("Appuyez sur une touche pour retourner au menu: ")
+                    if retour == "R":
+                        f.effacer_ecran()
+                        menu_admin()
+                    else:
+                        f.effacer_ecran()
+                        menu_admin()
                 case 2:
                     role = input("Secretaire--->1:\n")
                     nom = input("Nom: \n")
@@ -113,11 +120,21 @@ def menu_users(role):
             match (menu_secretaire()):
                 case 1:
                     f.show_user_rv(users)
-                    sleep(10)
+                    retour = input("Appuyez sur une touche pour retourner au menu: ")
+                    if retour == "R":
+                        f.effacer_ecran()
+                        menu_secretaire()
+                    else:
+                        f.effacer_ecran()
+                        menu_secretaire()
                 case 2:
+                    print("SERVICES DISPONIBLES: 'DENTISTE' / 'OPHTALMOLOGUE' / 'CARDIOLOGUE'")
                     f.demande_rv(users, input("nom: "), input("prenom: "), int(
                         input("tel: ")), print("motif"), input("service: "), input("ordonnance (oui ou non): "), print(role))
                 case 3:
+                    f.show_dm_clt(users, input("service de demande: "))
+                    f.change_state_dm(users, int(input("numero de demande RV de la personne: ")),int(input("entrer nouvelle etat de demande: ")))        
+                case 4:
                     f.show_med_available(users)
                     print(
                         "QUE VOULEZ VOUS CHANGER L'HEURE OU LA DATE ? \nSi heure appuyez sur 1\nSi date appuyez sur 2")
@@ -141,18 +158,45 @@ def menu_users(role):
                                input("entrer l'heure de rendez-vous: "), input(
                                    "entrer une date de medecin en fonction du service souhaiter: "),
                                input("entrer l'heure de medecin en fonction du service souhaiter: "))
-                    sleep(3)
+                    retour = input("Appuyez sur une touche pour retourner au menu: ")
+                    if retour == "R":
+                        f.effacer_ecran()
+                        menu_client()
+                    else:
+                        f.effacer_ecran()
+                        menu_client()
+                case 2:
+                    f.show_cons(users, int(input("numero phone: ")), input("nom medecin: "))
+                    retour = input("Appuyez sur une touche pour retourner au menu: ")
+                    if retour == "R":
+                        f.effacer_ecran()
+                        menu_client()
+                    else:
+                        f.effacer_ecran()
+                        menu_client()
                 case 3:
                     f.show_rv_clt(users, input("votre nom: "), input(
                         "votre prenom: "), int(input("numero phone: ")))
-                    sleep(10)
+                    retour = input("Appuyez sur une touche pour retourner au menu: ")
+                    if retour == "R":
+                        f.effacer_ecran()
+                        menu_client()
+                    else:
+                        f.effacer_ecran()
+                        menu_client()
                 case 4:
                     f.write_ser(users, input("votre nom: "), input(
                         "votre prenom: "), int(input("numero phone: ")))
                 case 5:
                     f.profil_client(users, input("nom: "), input(
                         "prenom: "), int(input("numero: ")))
-                    sleep(10)
+                    retour = input("Appuyez sur une touche pour retourner au menu: ")
+                    if retour == "R":
+                        f.effacer_ecran()
+                        menu_client()
+                    else:
+                        f.effacer_ecran()
+                        menu_client()
                 case 9:
                     retourMenu = 0
     if (role == ROLES[2]):
@@ -162,7 +206,13 @@ def menu_users(role):
             match (menu_medecin()):
                 case 1:
                     f.show_user_rv(users)
-                    sleep(10)
+                    retour = input("Appuyez sur une touche pour retourner au menu: ")
+                    if retour == "R":
+                        f.effacer_ecran()
+                        menu_medecin()
+                    else:
+                        f.effacer_ecran()
+                        menu_medecin()
                 case 2:
                     f.show_dm_clt(users, input("votre specialite: "))
                     sleep(5)
@@ -179,7 +229,7 @@ def menu_users(role):
                             date_rv = input(
                                 "entrez date de rendez-vous au format(dd/mm/yyyy): ")
                             heure_rv = input(
-                                "entrez heure rendez-vous au format(hh/mm): ")
+                                "entrez heure rendez-vous au format(hh:mm): ")
                             service = input(
                                 "entrer le service de consultation: ")
                             nomMed = input(
@@ -197,7 +247,7 @@ def menu_users(role):
                             date_rv = input(
                                 "entrez date de rendez-vous au format(dd/mm/yyyy): ")
                             heure_rv = input(
-                                "entrez heure rendez-vous au format(hh/mm): ")
+                                "entrez heure rendez-vous au format(hh:mm): ")
                             service = input(
                                 "entrer le service de consultation: ")
                             nomMed = input(
@@ -224,10 +274,22 @@ def menu_users(role):
                             "old date: "), input("new date: "))
                 case 4:
                     f.details_client(users, int(input("entrer id: ")))
-                    sleep(10)
+                    retour = input("Appuyez sur une touche pour retourner au menu: ")
+                    if retour == "R":
+                        f.effacer_ecran()
+                        menu_medecin()
+                    else:
+                        f.effacer_ecran()
+                        menu_medecin()
                 case 5:
                     f.profil_client(users, input("nom: "), input(
                         "prenom: "), int(input("numero: ")))
-                    sleep(10)
+                    retour = input("Appuyez sur une touche pour retourner au menu: ")
+                    if retour == "R":
+                        f.effacer_ecran()
+                        menu_medecin()
+                    else:
+                        f.effacer_ecran()
+                        menu_medecin()
                 case 9:
                     retourMenu = 0
