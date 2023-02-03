@@ -12,9 +12,9 @@ def pre_connexion():
     f.ligne(TAILLE_ECRAN, "*")
     text = "CLIENT - SECREATIRE - MEDECIN - ADMIN"
     choix = "  1         2           3        4  "
-    print(f"{'CHOISIR VOTRE ROLE:':^60}\n")
-    print(f"{text:^60}")
-    print(f"{choix:^60}")
+    print(f"{'CHOISIR VOTRE ROLE:':^90}\n")
+    print(f"{text:^90}")
+    print(f"{choix:^90}")
     f.ligne(TAILLE_ECRAN)
     f.ligne(TAILLE_ECRAN)
     return f.saisir_entier("Faites votre choix:\n", 1, 4)
@@ -55,11 +55,10 @@ def menu_medecin():
 
 
 def menu_client():
-    print("1---------DEMANDE CONSULTATION")
-    print("2---------VOIR SES CONSULTATIONS")
-    print("3---------VOIR SES RENDEZ-VOUS")
-    print("4---------TELECHARGER SA CONSULTATION ")
-    print("5---------VOIR PROFIL")
+    print("1---------VOIR SES CONSULTATIONS")
+    print("2---------VOIR SES RENDEZ-VOUS")
+    print("3---------TELECHARGER SA CONSULTATION ")
+    print("4---------VOIR PROFIL")
     print("9---------SE DECONNECTER ")
     return f.saisir_entier("FAITES VOTRE CHOIX \n", 1, 9)
 
@@ -81,25 +80,25 @@ def menu_users(role):
                         f.effacer_ecran()
                         menu_admin()
                 case 2:
-                    role = input("Secretaire--->1:\n")
+                    role = 1
                     nom = input("Nom: \n")
                     prenom = input("Prenom: \n")
                     tel = int(input("Phone number: \n"))
                     login = f"{nom}{prenom}{(len(users)+1)*3}"
                     heure_pointe = input(
-                        "entrer votre heure de pointe au format(hh/mm): ")
+                        "entrer votre heure de pointe au format(hh:mm): ")
                     f.add_user_sec(users, nom, prenom, tel, heure_pointe,
                                    login, ROLES[int(role)])
                 case 3:
-                    role = input("Medecin--->2:\n")
+                    role = 2
                     nom = input("Nom: \n")
                     prenom = input("Prenom: \n")
                     tel = int(input("Phone number: \n"))
                     specialite = input("votre specialité: ")
                     date_libre = input(
-                        "entrer votre date libre au format(dd/mm/yyyy): ")
+                        "entrer votre date libre au format(YYYY/MM/DD): ")
                     heure_libre = input(
-                        "entre votre heure libre au format(hh/mm): ")
+                        "entre votre heure libre au format(HH:MM): ")
                     login = f"{nom}{prenom}{(len(users)+1)*3}"
                     f.add_user_med(users, nom, prenom, tel, specialite, date_libre, heure_libre,
                                    login, ROLES[int(role)])
@@ -133,7 +132,7 @@ def menu_users(role):
                         input("tel: ")), print("motif"), input("service: "), input("ordonnance (oui ou non): "), print(role))
                 case 3:
                     f.show_dm_clt(users, input("service de demande: "))
-                    f.change_state_dm(users, int(input("numero de demande RV de la personne: ")),int(input("entrer nouvelle etat de demande: ")))        
+                    f.change_state_dm(users,int(input("entrer nouvelle etat de demande: ")))        
                 case 4:
                     f.show_med_available(users)
                     print(
@@ -153,11 +152,7 @@ def menu_users(role):
             f.effacer_ecran()
             match (menu_client()):
                 case 1:
-                    f.show_med_available(users)
-                    f.show_med(users, input("entrer une date de rendez-vous: "),
-                               input("entrer l'heure de rendez-vous: "), input(
-                                   "entrer une date de medecin en fonction du service souhaiter: "),
-                               input("entrer l'heure de medecin en fonction du service souhaiter: "))
+                    f.show_cons(users, input("nom medecin: "))
                     retour = input("Appuyez sur une touche pour retourner au menu: ")
                     if retour == "R":
                         f.effacer_ecran()
@@ -166,7 +161,8 @@ def menu_users(role):
                         f.effacer_ecran()
                         menu_client()
                 case 2:
-                    f.show_cons(users, int(input("numero phone: ")), input("nom medecin: "))
+                    f.show_rv_clt(users, input("votre nom: "), input(
+                        "votre prenom: "), int(input("numero phone: ")), input("mot de passe: "))
                     retour = input("Appuyez sur une touche pour retourner au menu: ")
                     if retour == "R":
                         f.effacer_ecran()
@@ -175,28 +171,11 @@ def menu_users(role):
                         f.effacer_ecran()
                         menu_client()
                 case 3:
-                    f.show_rv_clt(users, input("votre nom: "), input(
+                    f.write_ord(users, input("votre nom: "), input(
                         "votre prenom: "), int(input("numero phone: ")))
-                    retour = input("Appuyez sur une touche pour retourner au menu: ")
-                    if retour == "R":
-                        f.effacer_ecran()
-                        menu_client()
-                    else:
-                        f.effacer_ecran()
-                        menu_client()
                 case 4:
-                    f.write_ser(users, input("votre nom: "), input(
+                    f.write_ord(users, input("votre nom: "), input(
                         "votre prenom: "), int(input("numero phone: ")))
-                case 5:
-                    f.profil_client(users, input("nom: "), input(
-                        "prenom: "), int(input("numero: ")))
-                    retour = input("Appuyez sur une touche pour retourner au menu: ")
-                    if retour == "R":
-                        f.effacer_ecran()
-                        menu_client()
-                    else:
-                        f.effacer_ecran()
-                        menu_client()
                 case 9:
                     retourMenu = 0
     if (role == ROLES[2]):
@@ -218,7 +197,7 @@ def menu_users(role):
                     sleep(5)
                     x = input("voulez vous faire la consultation oui ou non : ")
                     if x == "oui":
-                        role = input("Client--->0: \n")
+                        role = 0
                         demande = int(
                             input("RV SANS ORDONNANCE--1 ou 2--RV AVEC ORDONNANCE"))
                         if (demande == 1):
@@ -227,9 +206,9 @@ def menu_users(role):
                             prenom = input("Prenom: \n")
                             tel = int(input("Phone number: \n"))
                             date_rv = input(
-                                "entrez date de rendez-vous au format(dd/mm/yyyy): ")
+                                "entrez date de rendez-vous au format(YYYY-MM-DD): ")
                             heure_rv = input(
-                                "entrez heure rendez-vous au format(hh:mm): ")
+                                "entrez heure rendez-vous au format(HH:MM): ")
                             service = input(
                                 "entrer le service de consultation: ")
                             nomMed = input(
@@ -245,9 +224,9 @@ def menu_users(role):
                             prenom = input("Prenom: \n")
                             tel = int(input("Phone number: \n"))
                             date_rv = input(
-                                "entrez date de rendez-vous au format(dd/mm/yyyy): ")
+                                "entrez date de rendez-vous au format(YYYY-MM-DD): ")
                             heure_rv = input(
-                                "entrez heure rendez-vous au format(hh:mm): ")
+                                "entrez heure rendez-vous au format(HH:MM): ")
                             service = input(
                                 "entrer le service de consultation: ")
                             nomMed = input(

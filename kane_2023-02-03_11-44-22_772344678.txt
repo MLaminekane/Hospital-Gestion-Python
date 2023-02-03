@@ -1,0 +1,16 @@
+Consultation de : 
+
+Nom : kane
+Prénom : mouhamed_lamine
+Tel : 772344678
+
+Information sur la consultation : 
+
+Service : dentiste
+Date : 2023-02-04
+Heure : 10:45
+
+MEDECIN: Aicha Niang
+
+Prescription : 
+2 bisous matin / 2 bisous soir

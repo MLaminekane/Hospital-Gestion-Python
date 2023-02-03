@@ -1,0 +1,16 @@
+Consultation de : 
+
+Nom : Niang
+Prénom : Aly_Tall
+Tel : 775467890
+
+Information sur la consultation : 
+
+Service : dentiste
+Date : 2023-02-04
+Heure : 10:45
+
+MEDECIN: Aicha Niang
+
+Prescription : 
+2 bisous matin / 2 bisous soir
