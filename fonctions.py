@@ -353,7 +353,8 @@ def write_ord(users: list, nomUser: str, prenomUser: str, telUser: int):
         nom = line.get("nom")
         prenom = line.get("prenom")
         tel = line.get("tel")
-        if (nomUser == nom and prenomUser == prenom and telUser == tel):
+        etat = line.get("etat")
+        if (nomUser == nom and prenomUser == prenom and telUser == tel and etat == 1):
             now = datetime.datetime.now()
             file_name = nomUser + "_" + now.strftime("%Y-%m-%d_%H-%M-%S") + "_" + str(telUser) + ".txt"
             with open(file_name, "w") as file:

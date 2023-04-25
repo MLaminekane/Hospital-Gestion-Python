@@ -58,7 +58,6 @@ def menu_client():
     print("1---------VOIR SES CONSULTATIONS")
     print("2---------VOIR SES RENDEZ-VOUS")
     print("3---------TELECHARGER SA CONSULTATION ")
-    print("4---------VOIR PROFIL")
     print("9---------SE DECONNECTER ")
     return f.saisir_entier("FAITES VOTRE CHOIX \n", 1, 9)
 
@@ -173,9 +172,7 @@ def menu_users(role):
                 case 3:
                     f.write_ord(users, input("votre nom: "), input(
                         "votre prenom: "), int(input("numero phone: ")))
-                case 4:
-                    f.write_ord(users, input("votre nom: "), input(
-                        "votre prenom: "), int(input("numero phone: ")))
+
                 case 9:
                     retourMenu = 0
     if (role == ROLES[2]):
